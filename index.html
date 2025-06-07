@@ -1,9 +1,26 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="refresh" content="0;url=./connector.html">
-  </head>
-  <body>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <base target="_blank" />
+  <title>Estimated Time</title>
+  <script src="https://p.trellocdn.com/power-up.min.js"></script>
+  <!-- Load your custom styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="card-section-content">
+    <!-- make sure the class matches your CSS selector -->
+    <input
+      id="estimated-time"
+      class="estimated-hours-input"
+      type="number"
+      min="0"
+      step="0.25"
+      placeholder="Hrs"
+    />
+  </div>
+
+  <script src="index.js"></script>
+</body>
 </html>
