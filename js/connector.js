@@ -6,7 +6,7 @@ window.TrelloPowerUp.initialize({
   /* ---------------------- */
   'card-back-section': function (t, options) {
     return {
-      title: 'Estimated Hours',
+      title: 'Estimated Time (hrs)',
       icon: 'https://discobot86.github.io/Task_estimates/img/icon.png',
       content: {
         type: 'iframe',
