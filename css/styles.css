@@ -9,7 +9,7 @@ input.estimated-hours-input {
   -webkit-appearance: none;
   appearance: none;
 
-  width: 12%;              
+  width: 20%;              
   padding: 8px 12px;
 
   border-radius: 3px;        /* Trello default */
