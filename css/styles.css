@@ -1,32 +1,27 @@
-/* make the iframe background transparent */
+/* Make the iframe itself transparent so the card background shows through */
 body {
   margin: 0;
   background: transparent;
 }
 
-/* target your input */
+/* Estimated-hours input */
 input.estimated-hours-input {
   -webkit-appearance: none;
   appearance: none;
 
-  width: 30%;
-  border-radius: 3px !important;
-
-  /* fallbacks if the CSS vars aren’t defined in your iframe */
-  background-color: var(--ds-background-input, #FAFBFC) !important;
-  border: 1px solid var(--ds-border-input, #DFE1E6) !important;
-  color: var(--ds-text, #172B4D) !important;
-
-  box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-               "Noto Sans", Ubuntu, "Droid Sans", "Helvetica Neue", sans-serif;
-  font-size: 14px;
-  margin: 0;
+  width: 100%;               /* take full column width */
   padding: 8px 12px;
+
+  border-radius: 3px;        /* Trello default */
+  border: 1px solid var(--ds-border-input, #DFE1E6);
+  background-color: var(--ds-background-input, #FAFBFC);
+  color: var(--ds-text, #172B4D);
+
+  font: 14px/20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Ubuntu, sans-serif;
+  box-sizing: border-box;
 }
 
-/* focus state */
 input.estimated-hours-input:focus {
-  border-color: var(--ds-border-focused, #4C9AFF) !important;
+  border-color: var(--ds-border-focused, #4C9AFF);
   outline: none;
 }
