@@ -1,9 +1,6 @@
-// This should be the ENTIRE content of js/card-back-section.js
+// js/card-back-section.js
 
 const t = window.TrelloPowerUp.iframe();
-
-// This tells Trello the Power-Up is theme-aware
-t.enable('theme');
 
 const estimatedHoursInput = document.getElementById('estimated-hours');
 
