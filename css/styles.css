@@ -7,7 +7,7 @@ body {
 
 .estimated-hours-input {
   /* We only need to control the width and box-sizing */
-  width: 50%;
+  width: 30%;
   box-sizing: border-box;
 
   /* Let Trello's default input styles handle the rest,
