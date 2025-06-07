@@ -1,5 +1,8 @@
 const t = window.TrelloPowerUp.iframe();
 
+// This is the magic line! It tells Trello to send theme colors.
+t.enable('theme');
+
 const estimatedHoursInput = document.getElementById('estimated-hours');
 
 t.render(function(){
@@ -14,6 +17,7 @@ t.render(function(){
 estimatedHoursInput.addEventListener('change', function(){
   t.set('card', 'shared', 'estimatedHours', estimatedHoursInput.value)
     .then(function(){
-      t.closePopup();
+      // It's good practice not to close popups from a card-back-section
+      // unless it's a specific user action.
     });
 });
