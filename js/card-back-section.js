@@ -1,5 +1,3 @@
-// This is the final, correct code for js/card-back-section.js
-
 const t = window.TrelloPowerUp.iframe();
 
 const estimatedHoursInput = document.getElementById('estimated-hours');
