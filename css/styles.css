@@ -1,36 +1,32 @@
-/* In css/styles.css */
-
+/* make the iframe background transparent */
 body {
   margin: 0;
   background: transparent;
 }
 
-/* Use a more specific selector and reset the native appearance
-  to ensure our custom styles are applied.
-*/
+/* target your input */
 input.estimated-hours-input {
-  -webkit-appearance: none; /* Reset native look */
-  appearance: none; /* Standard version of the property */
-  
-  /* Your custom styles */
+  -webkit-appearance: none;
+  appearance: none;
+
   width: 30%;
-  border-radius: 3px; /* Trello's standard radius */
-  
-  /* Trello's theme variables for a perfect match */
-  background-color: var(--ds-background-input, #FAFBFC);
-  border: 1px solid var(--ds-border-input, #DFE1E6);
-  color: var(--ds-text, #172B4D);
-  
-  /* Standard box model and font styles */
+  border-radius: 3px !important;
+
+  /* fallbacks if the CSS vars aren’t defined in your iframe */
+  background-color: var(--ds-background-input, #FAFBFC) !important;
+  border: 1px solid var(--ds-border-input, #DFE1E6) !important;
+  color: var(--ds-text, #172B4D) !important;
+
   box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Noto Sans", "Ubuntu", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+               "Noto Sans", Ubuntu, "Droid Sans", "Helvetica Neue", sans-serif;
   font-size: 14px;
   margin: 0;
   padding: 8px 12px;
 }
 
-/* Style for when the input is focused (clicked on) */
+/* focus state */
 input.estimated-hours-input:focus {
-  border-color: var(--ds-border-focused, #4C9AFF);
+  border-color: var(--ds-border-focused, #4C9AFF) !important;
   outline: none;
 }
