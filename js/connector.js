@@ -1,5 +1,3 @@
-// js/connector.js
-
 window.TrelloPowerUp.initialize({
   /* ---------------------- */
   /* This is your existing card-back-section */
