@@ -1,6 +1,18 @@
+/* B E F O R E */
 .form-grid {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-gap: 8px;
   align-items: center;
+}
+
+/* A F T E R */
+body {
+  margin: 0;
+}
+
+#estimated-hours {
+  width: 100%;
+  box-sizing: border-box; /* This prevents padding from making the element wider than 100% */
+  margin: 0;
 }
