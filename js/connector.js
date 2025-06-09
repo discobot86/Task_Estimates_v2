@@ -37,4 +37,24 @@ window.TrelloPowerUp.initialize({
       return [];
     }
   },
+  +  // new: show a per-list total of all “estimated-time” values
++  'list-badges': function(t, opts) {
++    return t.cards('id')
++      // pull the “estimated-time” for each card in the list
++      .then(ids =>
++        Promise.all(
++          ids.map(id => t.get(id, 'shared', 'estimated-time'))
++        )
++      )
++      // sum them and return a single badge on the list header
++      .then(vals => {
++        const total = vals.reduce((sum, v) =>
++          sum + (parseFloat(v) || 0)
++        , 0);
++        return [{
++          text: total.toFixed(2) + ' hrs',
++          title: 'Total planned time'
++        }];
++      });
++  }
 });
