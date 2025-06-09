@@ -37,34 +37,34 @@ window.TrelloPowerUp.initialize({
       return [];
     }
   },
- 'list-header': function(t, options) {
-    // Get all card objects in the current list
-    return t.cards('id')
-      .then(function(cards) {
-        // Create an array of just the card IDs
-        const cardIds = cards.map(function(c) { return c.id; });
-        // Get the 'estimate' value from the shared storage for all cards
-        return t.get(cardIds, 'shared', 'estimate');
-      })
-      .then(function(estimates) {
-        // 'estimates' is an array of all the hour values.
-        // Some values may be undefined if a card has no estimate.
-        const totalHours = estimates.reduce(function(sum, estimateValue) {
-          const hours = parseFloat(estimateValue);
-          // Add the hours to the sum, or 0 if it's not a valid number
-          return sum + (isNaN(hours) ? 0 : hours);
-        }, 0);
+ 'list-actions': function(t) {
+    return [{
+      // This is the text that will appear in the menu
+      text: 'Calculate Total Hours',
+      // This function runs when you click the button
+      callback: function(t) {
+        // Get all cards in the list
+        return t.cards('id')
+          .then(function(cards) {
+            const cardIds = cards.map(function(c) { return c.id; });
+            // Fetch all the estimates
+            return t.get(cardIds, 'shared', 'estimate');
+          })
+          .then(function(estimates) {
+            // Sum the estimates
+            const totalHours = estimates.reduce(function(sum, estimateValue) {
+              const hours = parseFloat(estimateValue);
+              return sum + (isNaN(hours) ? 0 : hours);
+            }, 0);
 
-        // Only display the header if the total is greater than zero
-        if (totalHours > 0) {
-          return {
-            title: 'Total Hours', // This text appears on hover
-            text: 'Σ ' + totalHours.toFixed(1) + 'h', // This text is displayed
-          };
-        }
-        // Return nothing to hide the header for this list
-        return null;
-      });
+            // Display the result in a notification at the top of the screen
+            return t.alert({
+              message: 'Total Hours: ' + totalHours.toFixed(1) + 'h',
+              duration: 10, // Alert shows for 10 seconds
+            });
+          });
+      }
+    }];
   },
 
   // ... (the rest of your capabilities)
