@@ -1,34 +1,5 @@
 window.TrelloPowerUp.initialize({
-  /* ---------------------- */
-  /* card-back-section      */
-  /* ---------------------- */
-  'card-back-section': function(t, options) {
-    return {
-      title: 'Estimated Time (hrs)',
-      icon: 'https://discobot86.github.io/Task_estimates/img/icon.png',
-      content: {
-        type: 'iframe',
-        url: t.signUrl('./card-back-section.html'),
-        height: 50
-      }
-    };
-  },
-
-  /* ---------------------- */
-  /* card-badges            */
-  /* ---------------------- */
-  'card-badges': async function(t, options) {
-    const estimatedHours = await t.get('card', 'shared', 'estimatedHours');
-    if (estimatedHours && parseFloat(estimatedHours) > 0) {
-      return [{
-        text: estimatedHours + ' hrs',
-        icon: 'https://discobot86.github.io/Task_estimates/img/icon.png',
-        color: 'green',
-        refresh: 10
-      }];
-    }
-    return [];
-  },
+  /* … card-back-section and card-badges above … */
 
   /* ---------------------- */
   /* list-actions           */
@@ -49,19 +20,29 @@ window.TrelloPowerUp.initialize({
             )
           );
 
-          // 3) sum, extracting only the leading number and ignoring bad values
-const total = estimates.reduce((sum, v) => {
-  // force to string, drop any non-digit, minus or dot chars
-  const cleaned = String(v).trim().replace(/[^0-9.\-]/g, '');
-  const num     = parseFloat(cleaned);
-  return sum + (Number.isFinite(num) ? num : 0);
-}, 0);
+          // ──────────────────────────────
+          // DEBUG: see exactly what you’re summing
+          console.log('raw estimates:', estimates);
+          console.log(
+            'cleaned estimates:',
+            estimates.map(v =>
+              String(v).trim().replace(/[^0-9.\-]/g, '')
+            )
+          );
+          // ──────────────────────────────
 
-// 4) show it with two decimals and “hrs”
-return t.alert({
-  message: 'Total Hours: ' + total.toFixed(2) + ' hrs',
-  duration: 10
-});
+          // 3) sum, extracting only the leading number and ignoring bad values
+          const total = estimates.reduce((sum, v) => {
+            const cleaned = String(v).trim().replace(/[^0-9.\-]/g, '');
+            const num     = parseFloat(cleaned);
+            return sum + (Number.isFinite(num) ? num : 0);
+          }, 0);
+
+          // 4) show it with two decimals and “hrs”
+          return t.alert({
+            message: 'Total Hours: ' + total.toFixed(2) + ' hrs',
+            duration: 10
+          });
         }
         catch (err) {
           console.error('POWER-UP FAILED:', err);
