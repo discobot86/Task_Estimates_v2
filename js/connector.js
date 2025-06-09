@@ -1,52 +1,42 @@
-/*
-  File: connector.js
-  Description: A complete, corrected code block for all capabilities.
-*/
-TrelloPowerUp.initialize({
-    // --- YOUR ORIGINAL CAPABILITIES ---
-    'card-badges': function(t, options){
-        return t.get('card', 'shared', 'estimate')
-        .then(function(estimate){
-            if(estimate && !isNaN(parseFloat(estimate))){
-                return [{
-                    text: 'Σ ' + estimate + 'h',
-                    color: 'green'
-                }];
-            }
-            return [];
-        });
-    },
-    'card-detail-badges': function(t, options) {
-        return t.get('card', 'shared', 'estimate')
-        .then(function(estimate){
-            if(estimate && !isNaN(parseFloat(estimate))){
-                return [{
-                    title: 'Estimate',
-                    text: 'Σ ' + estimate + 'h',
-                    color: 'green',
-                    callback: function(t){
-                        return t.popup({
-                            title: "Estimation",
-                            url: './estimate-popup.html',
-                        });
-                    }
-                }]
-            }
-            return [];
-        });
-    },
-    'card-buttons': function(t, options) {
-        return [{
-            icon: 'https://cdn.glitch.com/a84f3353-f773-441b-8533-31742447e178%2Fstopwatch.svg?v=1617299298309',
-            text: 'Estimate',
-            callback: function(t) {
-                return t.popup({
-                    title: "Estimation",
-                    url: './estimate-popup.html',
-                });
-            }
-        }];
-    },
+window.TrelloPowerUp.initialize({
+  /* ---------------------- */
+  /* This is your existing card-back-section */
+  /* ---------------------- */
+  'card-back-section': function (t, options) {
+    return {
+      title: 'Estimated Time (hrs)',
+      icon: 'https://discobot86.github.io/Task_estimates/img/icon.png',
+      content: {
+        type: 'iframe',
+        url: t.signUrl('./card-back-section.html'),
+        height: 50
+      }
+    };
+  },
+
+  /* ---------------------- */
+  /* This is the new card-badges capability */
+  /* ---------------------- */
+  'card-badges': async function (t, options) {
+    // Get the stored hours from the card
+    const estimatedHours = await t.get('card', 'shared', 'estimatedHours');
+
+    // Check if we have a value and it's greater than 0
+    if (estimatedHours && parseFloat(estimatedHours) > 0) {
+      // If we do, return an array with our badge object
+      return [
+        {
+          text: estimatedHours + ' hrs',
+          icon: 'https://discobot86.github.io/Task_estimates/img/icon.png',
+          color: 'green',
+          refresh: 10
+        },
+      ];
+    } else {
+      // If there are no hours, return an empty array to show nothing
+      return [];
+    }
+  },
 
     // --- NEW, CORRECTED CAPABILITY ---
     'list-actions': function(t) {
