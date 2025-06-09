@@ -1,6 +1,6 @@
 window.TrelloPowerUp.initialize({
   /* ---------------------- */
-  /* Existing card-back-section */
+  /* card-back-section */
   /* ---------------------- */
   'card-back-section': function(t, options) {
     return {
@@ -15,7 +15,7 @@ window.TrelloPowerUp.initialize({
   },
 
   /* ---------------------- */
-  /* New card-badges capability */
+  /* card-badges */
   /* ---------------------- */
   'card-badges': async function(t, options) {
     const estimatedHours = await t.get('card', 'shared', 'estimatedHours');
@@ -31,18 +31,31 @@ window.TrelloPowerUp.initialize({
   },
 
   /* ---------------------- */
-  /* New list-actions capability */
+  /* list-actions */
   /* ---------------------- */
   'list-actions': function(t) {
     return [{
       text: 'Calculate Total Hours',
       callback: async function(t) {
         try {
-          const cards     = await t.cards('id');
-          const cardIds   = cards.map(c => c.id);
-          const estimates = await t.get(cardIds, 'card', 'shared', 'estimatedHours');
-          const total     = estimates.reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+          // 1. get all cards on the list
+          const cards   = await t.cards('id');
+          const cardIds = cards.map(c => c.id);
 
+          // 2. fetch each card’s stored value
+          const estimates = await Promise.all(
+            cardIds.map(id =>
+              t.get(id, 'card', 'shared', 'estimatedHours')
+            )
+          );
+
+          // 3. sum them up
+          const total = estimates.reduce(
+            (sum, v) => sum + (parseFloat(v) || 0),
+            0
+          );
+
+          // 4. show the result
           return t.alert({
             message: 'Total Hours: ' + total.toFixed(1) + 'h',
             duration: 10
