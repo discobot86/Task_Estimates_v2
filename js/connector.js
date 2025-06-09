@@ -1,3 +1,4 @@
+console.log('🚀 connector.js loaded');
 window.TrelloPowerUp.initialize({
   /* … card-back-section and card-badges above … */
 
