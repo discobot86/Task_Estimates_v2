@@ -37,4 +37,29 @@ window.TrelloPowerUp.initialize({
       return [];
     }
   },
+   window.TrelloPowerUp.initialize({
+   'card-badges': function(t, opts) {
+     // …your badges code…
+   },
+
+   'card-back-section': function(t, opts) {
+     // …your back-of-card code…
+   },
+     // added new Jun 9
+  'list-badges': function(t, opts) {
+    return t.cards('id')
+      .then(ids =>
+        Promise.all(ids.map(id => t.get(id, 'shared', 'estimated-time')))
+      )
+      .then(vals => {
+        const total = vals.reduce((sum, v) =>
+          sum + (parseFloat(v) || 0), 0
+        );
+        return [{
+          text: total.toFixed(2) + ' hrs',
+          title: 'Total planned time'
+       }];  // added new June 9
+      });
+  }
+ });
 });
