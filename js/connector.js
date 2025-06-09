@@ -42,10 +42,15 @@ window.TrelloPowerUp.initialize({
           const cards   = await t.cards('id');
           const cardIds = cards.map(c => c.id);
 
-          // 2. fetch each card’s stored value
+          // 2. fetch each card’s stored value using the correct signature
           const estimates = await Promise.all(
-            cardIds.map(id =>
-              t.get(id, 'card', 'shared', 'estimatedHours')
+            cardIds.map(cardId =>
+              t.get(
+                'card',         // scopeType
+                'shared',       // visibility
+                'estimatedHours', // key
+                cardId          // the id you want to fetch from
+              )
             )
           );
 
