@@ -1,9 +1,40 @@
+// ./js/connector.js
 console.log('🚀 connector.js loaded');
+
 window.TrelloPowerUp.initialize({
-  /* … card-back-section and card-badges above … */
+  /* ---------------------- */
+  /* Card Back Section     */
+  /* ---------------------- */
+  'card-back-section': function(t, options) {
+    return {
+      title: 'Estimated Time (hrs)',
+      icon: 'https://discobot86.github.io/Task_estimates/img/icon.png',
+      content: {
+        type: 'iframe',
+        url: t.signUrl('./card-back-section.html'),
+        height: 50
+      }
+    };
+  },
 
   /* ---------------------- */
-  /* list-actions           */
+  /* Card Badges           */
+  /* ---------------------- */
+  'card-badges': async function(t, options) {
+    const estimatedHours = await t.get('card', 'shared', 'estimatedHours');
+    if (estimatedHours && parseFloat(estimatedHours) > 0) {
+      return [{
+        text: estimatedHours + ' hrs',
+        icon: 'https://discobot86.github.io/Task_estimates/img/icon.png',
+        color: 'green',
+        refresh: 10
+      }];
+    }
+    return [];
+  },
+
+  /* ---------------------- */
+  /* List Actions          */
   /* ---------------------- */
   'list-actions': function(t) {
     return [{
@@ -21,8 +52,8 @@ window.TrelloPowerUp.initialize({
             )
           );
 
-          // ──────────────────────────────
-          // DEBUG: see exactly what you’re summing
+          // ───────────────────────────────────
+          // DEBUG: inspect what you’re summing
           console.log('raw estimates:', estimates);
           console.log(
             'cleaned estimates:',
@@ -30,7 +61,7 @@ window.TrelloPowerUp.initialize({
               String(v).trim().replace(/[^0-9.\-]/g, '')
             )
           );
-          // ──────────────────────────────
+          // ───────────────────────────────────
 
           // 3) sum, extracting only the leading number and ignoring bad values
           const total = estimates.reduce((sum, v) => {
@@ -57,4 +88,4 @@ window.TrelloPowerUp.initialize({
     }];
   }
 
-});  // ← make sure this closes initialize()
+});  // ← close initialize()
