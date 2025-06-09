@@ -37,19 +37,35 @@ window.TrelloPowerUp.initialize({
       return [];
     }
   },
-'list-badges': function(t, opts) {
+ 'list-header': function(t, options) {
+    // Get all card objects in the current list
     return t.cards('id')
-      .then(ids =>
-        Promise.all(ids.map(id => t.get(id, 'shared', 'estimated-time')))
-      )
-      .then(vals => {
-        const total = vals.reduce((sum, v) =>
-          sum + (parseFloat(v) || 0)
-        , 0);
-        return [{
-          text: total.toFixed(2) + ' hrs',
-          title: 'Total planned time'
-        }];
+      .then(function(cards) {
+        // Create an array of just the card IDs
+        const cardIds = cards.map(function(c) { return c.id; });
+        // Get the 'estimate' value from the shared storage for all cards
+        return t.get(cardIds, 'shared', 'estimate');
+      })
+      .then(function(estimates) {
+        // 'estimates' is an array of all the hour values.
+        // Some values may be undefined if a card has no estimate.
+        const totalHours = estimates.reduce(function(sum, estimateValue) {
+          const hours = parseFloat(estimateValue);
+          // Add the hours to the sum, or 0 if it's not a valid number
+          return sum + (isNaN(hours) ? 0 : hours);
+        }, 0);
+
+        // Only display the header if the total is greater than zero
+        if (totalHours > 0) {
+          return {
+            title: 'Total Hours', // This text appears on hover
+            text: 'Σ ' + totalHours.toFixed(1) + 'h', // This text is displayed
+          };
+        }
+        // Return nothing to hide the header for this list
+        return null;
       });
-  }
+  },
+
+  // ... (the rest of your capabilities)
 });
