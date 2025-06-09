@@ -2,30 +2,29 @@
 console.log('🚀 connector.js loaded');
 
 window.TrelloPowerUp.initialize({
-  /* ---------------------- */
-  /* Card Back Section     */
-  /* ---------------------- */
+  /* Card Back Section */
   'card-back-section': function(t, options) {
     return {
       title: 'Estimated Time (hrs)',
-      icon: 'https://discobot86.github.io/Task_estimates/img/icon.png',
+      icon: 'https://discobot86.github.io/Task_Estimates_v2/img/icon.png',
       content: {
         type: 'iframe',
-        url: t.signUrl('./card-back-section.html'),
+        // cache-buster to ensure you’re always loading the latest iframe
+        url: t.signUrl('./card-back-section.html?cb=' + Date.now()),
         height: 50
       }
     };
   },
 
-  /* ---------------------- */
-  /* Card Badges           */
-  /* ---------------------- */
+  /* Card Badges */
   'card-badges': async function(t, options) {
-    const estimatedHours = await t.get('card', 'shared', 'estimatedHours');
-    if (estimatedHours && parseFloat(estimatedHours) > 0) {
+    const stored = await t.get('card', 'shared', 'estimatedHours');
+    const raw    = String(stored).trim();
+    // only show a badge if the stored value is a valid number
+    if (/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(raw)) {
       return [{
-        text: estimatedHours + ' hrs',
-        icon: 'https://discobot86.github.io/Task_estimates/img/icon.png',
+        text: raw + ' hrs',
+        icon: 'https://discobot86.github.io/Task_Estimates_v2/img/icon.png',
         color: 'green',
         refresh: 10
       }];
@@ -33,15 +32,13 @@ window.TrelloPowerUp.initialize({
     return [];
   },
 
-  /* ---------------------- */
-  /* List Actions          */
-  /* ---------------------- */
+  /* List Actions */
   'list-actions': function(t) {
     return [{
       text: 'Calculate Total Hours',
       callback: async function(t) {
         try {
-          // 1) pull every card ID on this list
+          // 1) get all cards on the list
           const cards   = await t.cards('id');
           const cardIds = cards.map(c => c.id);
 
@@ -52,25 +49,23 @@ window.TrelloPowerUp.initialize({
             )
           );
 
-          // ───────────────────────────────────
-          // DEBUG: inspect what you’re summing
+          // DEBUG: inspect what you got back
           console.log('raw estimates:', estimates);
           console.log(
             'cleaned estimates:',
-            estimates.map(v =>
-              String(v).trim().replace(/[^0-9.\-]/g, '')
-            )
+            estimates.map(v => String(v).trim().replace(/[^0-9.\-]/g, ''))
           );
-          // ───────────────────────────────────
 
-          // 3) sum, extracting only the leading number and ignoring bad values
+          // 3) sum only pure numeric entries
           const total = estimates.reduce((sum, v) => {
-            const cleaned = String(v).trim().replace(/[^0-9.\-]/g, '');
-            const num     = parseFloat(cleaned);
-            return sum + (Number.isFinite(num) ? num : 0);
+            const raw = String(v).trim();
+            if (!/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(raw)) {
+              return sum;
+            }
+            return sum + parseFloat(raw);
           }, 0);
 
-          // 4) show it with two decimals and “hrs”
+          // 4) display the result
           return t.alert({
             message: 'Total Hours: ' + total.toFixed(2) + ' hrs',
             duration: 10
@@ -87,5 +82,4 @@ window.TrelloPowerUp.initialize({
       }
     }];
   }
-
-});  // ← close initialize()
+});
