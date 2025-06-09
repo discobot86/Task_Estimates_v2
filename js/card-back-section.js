@@ -1,3 +1,5 @@
+console.log('✅ card-back-section.js loaded');
+
 // ./js/card-back-section.js
 const t = window.TrelloPowerUp.iframe();
 const input = document.getElementById('estimated-hours');
@@ -5,6 +7,7 @@ const input = document.getElementById('estimated-hours');
 // 1) When the iframe loads, pull whatever’s stored and show "0.00" or the saved value
 t.render(async () => {
   const stored = await t.get('card', 'shared', 'estimatedHours');
+  console.log('🔍 card-back stored value:', stored);
   if (Number.isFinite(parseFloat(stored))) {
     input.value = parseFloat(stored).toFixed(2);
   } else {
