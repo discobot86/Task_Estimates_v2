@@ -33,48 +33,45 @@ window.TrelloPowerUp.initialize({
   /* ---------------------- */
   /* list-actions */
   /* ---------------------- */
-  'list-actions': function(t) {
-    return [{
-      text: 'Calculate Total Hours',
-      callback: async function(t) {
-        try {
-          // 1. get all cards on the list
-          const cards   = await t.cards('id');
-          const cardIds = cards.map(c => c.id);
+'list-actions': function(t) {
+  return [{
+    text: 'Calculate Total Hours',
+    callback: async function(t) {
+      try {
+        // 1) pull every card ID on this list
+        const cards   = await t.cards('id');
+        const cardIds = cards.map(c => c.id);
 
-          // 2. fetch each card’s stored value using the correct signature
-          const estimates = await Promise.all(
-            cardIds.map(cardId =>
-              t.get(
-                'card',         // scopeType
-                'shared',       // visibility
-                'estimatedHours', // key
-                cardId          // the id you want to fetch from
-              )
-            )
-          );
+        // 2) fetch each card’s stored value
+        const estimates = await Promise.all(
+          cardIds.map(cardId =>
+            t.get('card', 'shared', 'estimatedHours', cardId)
+          )
+        );
 
-          // 3. sum them up
-          const total = estimates.reduce(
-            (sum, v) => sum + (parseFloat(v) || 0),
-            0
-          );
+        // 2a) inspect what you got back
+        console.log('raw estimates:', estimates);
 
-          // 4. show the result
-          return t.alert({
-            message: 'Total Hours: ' + total.toFixed(1) + 'h',
-            duration: 10
-          });
-        }
-        catch (err) {
-          console.error('POWER-UP FAILED:', err);
-          return t.alert({
-            message: 'An error occurred. Check the console.',
-            duration: 10,
-            display: 'error'
-          });
-        }
+        // 3) sum, ignoring anything non-finite
+        const total = estimates.reduce((sum, v) => {
+          const h = parseFloat(v);
+          return sum + (Number.isFinite(h) ? h : 0);
+        }, 0);
+
+        // 4) show it
+        return t.alert({
+          message: 'Total Hours: ' + total.toFixed(1) + 'h',
+          duration: 10
+        });
       }
-    }];
-  }
-});
+      catch (err) {
+        console.error('POWER-UP FAILED:', err);
+        return t.alert({
+          message: 'An error occurred. Check the console.',
+          duration: 10,
+          display: 'error'
+        });
+      }
+    }
+  }];
+}
