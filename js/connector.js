@@ -39,35 +39,36 @@ window.TrelloPowerUp.initialize({
   },
 
     // --- NEW, CORRECTED CAPABILITY ---
-    'list-actions': function(t) {
-      return [{
-        text: 'Calculate Total Hours',
-        callback: function(t) {
-          return t.cards('id')
-            .then(function(cards) {
-              const cardIds = cards.map(function(c) { return c.id; });
-              return t.get(cardIds, 'card:shared', 'estimate');
-            })
-            .then(function(estimates) {
-              const totalHours = estimates.reduce(function(sum, estimateValue) {
-                const hours = parseFloat(estimateValue);
-                return sum + (isNaN(hours) ? 0 : hours);
-              }, 0);
-    
-              return t.alert({
-                message: 'Total Hours: ' + totalHours.toFixed(1) + 'h',
-                duration: 10,
-              });
-            })
-            .catch(function(error) {
-              console.error('POWER-UP FAILED:', error);
-              return t.alert({
-                message: 'An error occurred. Check the console.',
-                duration: 10,
-                display: 'error'
-              });
-            });
-        }
-      }];
+'list-actions': function(t) {
+  return [{
+    text: 'Calculate Total Hours',
+    callback: function(t) {
+      return t.cards('id')
+        .then(function(cards) {
+          const cardIds = cards.map(function(c) { return c.id; });
+          
+          // --- THIS IS THE CORRECTED LINE ---
+          return t.get(cardIds, 'card:shared', 'estimate');
+        })
+        .then(function(estimates) {
+          const totalHours = estimates.reduce(function(sum, estimateValue) {
+            const hours = parseFloat(estimateValue);
+            return sum + (isNaN(hours) ? 0 : hours);
+          }, 0);
+
+          return t.alert({
+            message: 'Total Hours: ' + totalHours.toFixed(1) + 'h',
+            duration: 10,
+          });
+        })
+        .catch(function(error) {
+          console.error('POWER-UP FAILED:', error);
+          return t.alert({
+            message: 'An error occurred. Check the console.',
+            duration: 10,
+            display: 'error'
+          });
+        });
     }
-});
+  }];
+},
