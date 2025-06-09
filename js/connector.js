@@ -37,35 +37,37 @@ window.TrelloPowerUp.initialize({
       return [];
     }
   },
- 'list-actions': function(t) {
-    return [{
-      // This is the text that will appear in the menu
-      text: 'Calculate Total Hours',
-      // This function runs when you click the button
-      callback: function(t) {
-        // Get all cards in the list
-        return t.cards('id')
-          .then(function(cards) {
-            const cardIds = cards.map(function(c) { return c.id; });
-            // Fetch all the estimates
-            return t.get(cardIds, 'shared', 'estimate');
-          })
-          .then(function(estimates) {
-            // Sum the estimates
-            const totalHours = estimates.reduce(function(sum, estimateValue) {
-              const hours = parseFloat(estimateValue);
-              return sum + (isNaN(hours) ? 0 : hours);
-            }, 0);
+'list-actions': function(t) {
+  return [{
+    text: 'Calculate Total Hours',
+    callback: function(t) {
+      return t.cards('id')
+        .then(function(cards) {
+          const cardIds = cards.map(function(c) { return c.id; });
+          //
+          // THE FIX IS HERE: The scope must be 'card:shared'
+          //
+          return t.get(cardIds, 'card:shared', 'estimate');
+        })
+        .then(function(estimates) {
+          const totalHours = estimates.reduce(function(sum, estimateValue) {
+            const hours = parseFloat(estimateValue);
+            return sum + (isNaN(hours) ? 0 : hours);
+          }, 0);
 
-            // Display the result in a notification at the top of the screen
-            return t.alert({
-              message: 'Total Hours: ' + totalHours.toFixed(1) + 'h',
-              duration: 10, // Alert shows for 10 seconds
-            });
+          return t.alert({
+            message: 'Total Hours: ' + totalHours.toFixed(1) + 'h',
+            duration: 10,
           });
-      }
-    }];
-  },
-
-  // ... (the rest of your capabilities)
-});
+        })
+        .catch(function(error) {
+          // It's still good practice to keep this catch block
+          console.error('POWER-UP FAILED:', error);
+          return t.alert({
+            message: 'An error occurred. Check the console.',
+            duration: 10,
+            display: 'error'
+          });
+        });
+    }
+  }];
