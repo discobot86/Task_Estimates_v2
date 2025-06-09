@@ -2,25 +2,27 @@
 console.log('🚀 connector.js loaded');
 
 window.TrelloPowerUp.initialize({
-  /* Card Back Section */
+  /* ---------------------- */
+  /* Card Back Section     */
+  /* ---------------------- */
   'card-back-section': function(t, options) {
     return {
       title: 'Estimated Time (hrs)',
       icon: 'https://discobot86.github.io/Task_Estimates_v2/img/icon.png',
       content: {
         type: 'iframe',
-        // cache-buster to ensure you’re always loading the latest iframe
         url: t.signUrl('./card-back-section.html?cb=' + Date.now()),
         height: 50
       }
     };
   },
 
-  /* Card Badges */
+  /* ---------------------- */
+  /* Card Badges           */
+  /* ---------------------- */
   'card-badges': async function(t, options) {
     const stored = await t.get('card', 'shared', 'estimatedHours');
     const raw    = String(stored).trim();
-    // only show a badge if the stored value is a valid number
     if (/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(raw)) {
       return [{
         text: raw + ' hrs',
@@ -32,17 +34,32 @@ window.TrelloPowerUp.initialize({
     return [];
   },
 
-  /* List Actions */
+  /* ---------------------- */
+  /* List Actions          */
+  /* ---------------------- */
   'list-actions': function(t) {
     return [{
       text: 'Calculate Total Hours',
       callback: async function(t) {
         try {
-          // 1) get all cards on the list
+          // 1) pull every card ID on this list
           const cards   = await t.cards('id');
           const cardIds = cards.map(c => c.id);
 
-          // 2) fetch each card’s stored value
+          // 2) WIPE any non-numeric stored values (clears out old IDs)
+          await Promise.all(
+            cardIds.map(cardId =>
+              t.get('card', 'shared', 'estimatedHours', cardId)
+               .then(v => {
+                 const raw = String(v || '').trim();
+                 if (!/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(raw)) {
+                   return t.set('card', 'shared', 'estimatedHours', null, cardId);
+                 }
+               })
+            )
+          );
+
+          // 3) fetch each card’s (now-clean) stored value
           const estimates = await Promise.all(
             cardIds.map(cardId =>
               t.get('card', 'shared', 'estimatedHours', cardId)
@@ -56,16 +73,16 @@ window.TrelloPowerUp.initialize({
             estimates.map(v => String(v).trim().replace(/[^0-9.\-]/g, ''))
           );
 
-          // 3) sum only pure numeric entries
+          // 4) sum only pure numeric entries
           const total = estimates.reduce((sum, v) => {
-            const raw = String(v).trim();
+            const raw = String(v || '').trim();
             if (!/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(raw)) {
               return sum;
             }
             return sum + parseFloat(raw);
           }, 0);
 
-          // 4) display the result
+          // 5) display the result
           return t.alert({
             message: 'Total Hours: ' + total.toFixed(2) + ' hrs',
             duration: 10
